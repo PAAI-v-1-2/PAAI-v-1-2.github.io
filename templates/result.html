@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Lookup Result</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Bootstrap CSS via CDN -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
@@ -20,7 +19,6 @@
         <div class="card mb-2">
           <div class="card-header" id="heading{{ loop.index }}">
             <h5 class="mb-0">
-              <!-- Clicking this button toggles the collapse -->
               <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
                 Similar Family ID: {{ item.id }}
               </button>
@@ -40,7 +38,6 @@
     <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Try Another Lookup</a>
   </div>
 
-  <!-- Include jQuery and Bootstrap JS via CDN for the collapse to work -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
