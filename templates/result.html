@@ -20,7 +20,13 @@
           <div class="card-header" id="heading{{ loop.index }}">
             <h5 class="mb-0">
               <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
-                Similar Family ID: {{ item.id }}
+                {%if loop.index == 1%}
+                  First Most Similar Family ID: {{ item.id }}
+                {%elif loop.index == 2%}
+                  Second Most Similar Family ID: {{ item.id }}
+                {%else%}
+                  Third Most Similar Family ID: {{ item.id }}
+                {%endif%}
               </button>
             </h5>
           </div>
