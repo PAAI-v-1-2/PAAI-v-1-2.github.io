@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lookup Result</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS via CDN -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Lookup Result</h1>
+    <p class="lead">Results for Family Index Number: <strong>{{ number }}</strong></p>
+    <h3>Similar Entries:</h3>
+    <ul class="list-group mb-3">
+      <li class="list-group-item"><strong>Similar 1:</strong> {{ similar1 }}</li>
+      <li class="list-group-item"><strong>Similar 2:</strong> {{ similar2 }}</li>
+      <li class="list-group-item"><strong>Similar 3:</strong> {{ similar3 }}</li>
+    </ul>
+    <h3>Description:</h3>
+    <div class="alert alert-info">{{ description }}</div>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Try Another Lookup</a>
+  </div>
+</body>
+</html>
