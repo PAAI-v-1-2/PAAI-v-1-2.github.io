@@ -1,75 +1,45 @@
 from flask import Flask, render_template, request
-import pandas as pd
-import re
+import json
 
 app = Flask(__name__)
 
+# Load JSON data files (make sure they are in the same directory as app.py)
+with open('MPI.json', 'r') as mpi_file:
+    mpi_data = json.load(mpi_file)
 
-excel_file = pd.ExcelFile('family_similarity_results.xlsx')
-df_sheet1 = pd.read_excel(excel_file, sheet_name="Similar Families")
-df_sheet2 = pd.read_excel(excel_file, sheet_name="Family Descriptions")
+with open('comparison.json', 'r') as comp_file:
+    comp_data = json.load(comp_file)
 
-def extract_number(family_str):
-    match = re.search(r'\d+', str(family_str))
-    if match:
-        return int(match.group())
-    return None
-
-df_sheet1['family_number'] = df_sheet1['Family Index'].apply(extract_number)
-df_sheet2['family_number'] = df_sheet2['Family Index'].apply(extract_number)
-
-def get_similar_data(similar_value):
-    if similar_value == "No match":
-        return {"id": None, "description": None}
-    if similar_value is None:
-        return {"id": None, "description": None}
-    match_desc = df_sheet2[df_sheet2['family_id'] == similar_value]
-    if not match_desc.empty:
-        desc = match_desc.iloc[0].get('description', 'No description available.')
-    else:
-        desc = "No description available."
-    return {"id": similar_value, "description": desc}
+# List of attributes to compare
+ATTRIBUTES = ["education", "electricity", "sanitation", "water", "housing", "assets"]
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    result = None
+    error = None
+    key = None
     if request.method == 'POST':
-        number_input = request.form.get('number')
-        try:
-            number = int(number_input)
-        except ValueError:
-            error = "Please enter a valid number."
-            return render_template('index.html', error=error)
-
-        # Lookup in the first sheet
-        match1 = df_sheet1[df_sheet1['family_number'] == number]
-        if not match1.empty:
-            similar1 = match1.iloc[0].get('Similar 1', 'No match')
-            similar2 = match1.iloc[0].get('Similar 2', 'No match')
-            similar3 = match1.iloc[0].get('Similar 3', 'No match')
+        # Get the key from the form input.
+        key = request.form.get('key')
+        if key:
+            if key in mpi_data and key in comp_data:
+                mpi_entry = mpi_data[key]
+                comp_entry = comp_data[key]
+                # Build a result dictionary with attribute comparisons, descriptions, and the MPI label.
+                result = {
+                    'mpi_attributes': {attr: mpi_entry.get(attr, 'N/A') for attr in ATTRIBUTES},
+                    'comp_attributes': {attr: comp_entry.get(attr, 'N/A') for attr in ATTRIBUTES},
+                    'mpi_description': mpi_entry.get('description', 'No description available'),
+                    'comp_description': comp_entry.get('description', 'No description available'),
+                    'mpi_label': mpi_entry.get('label', 'N/A')
+                }
+            else:
+                error = f"Key {key} not found in one or both files."
         else:
-            similar1, similar2, similar3 = "No match", "No match", "No match"
+            error = "Please enter a key."
+    return render_template("index.html", result=result, error=error, key=key)
 
-        # Lookup for the primary family description
-        match2 = df_sheet2[df_sheet2['family_number'] == number]
-        if not match2.empty:
-            description = match2.iloc[0].get('description', 'No description available.')
-        else:
-            description = "No description available."
-
-        # Build list of dictionaries for the similar families
-        similar_data = [
-            get_similar_data(similar1),
-            get_similar_data(similar2),
-            get_similar_data(similar3)
-        ]
-
-        return render_template(
-            'result.html',
-            number=number,
-            description=description,
-            similar_data=similar_data
-        )
-    return render_template('index.html')
 
 if __name__ == '__main__':
+    # Run the app on localhost port 5000
     app.run(debug=True)
